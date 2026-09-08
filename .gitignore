@@ -1,0 +1,16 @@
+# Specs et maquettes : copie du vault privé anthony-os (Perso/Bien), données personnelles — jamais versionnées ici
+docs/
+
+# Node / Next
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+
+# Divers
+.DS_Store
+coverage/
+test-results/
