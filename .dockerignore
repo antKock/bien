@@ -1,0 +1,15 @@
+# Tout ce qui n'est pas nécessaire à `next build`. `docs/` ne doit jamais
+# entrer dans une couche d'image : données personnelles.
+.git
+.github
+.next
+node_modules
+.env
+.env.*
+!.env.example
+docs
+coverage
+test-results
+*.log
+.DS_Store
+.claude

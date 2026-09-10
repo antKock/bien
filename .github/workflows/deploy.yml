@@ -1,0 +1,93 @@
+# Build de l'image et déploiement sur le VPS (Dokploy), à chaque push sur main.
+#
+# Un seul environnement déployé jusqu'à la mise en prod native. L'image est
+# publiée sur GHCR (ghcr.io/antkock/bien:main) ; Dokploy la tire via son API
+# `application.deploy`. Tant que les secrets Dokploy ne sont pas posés, le
+# workflow se contente de construire et publier l'image.
+#
+#   secrets : DOKPLOY_URL, DOKPLOY_TOKEN, DOKPLOY_APP_ID
+#   vars    : APP_URL (origine publique, active la vérification post-déploiement)
+#
+# Actions épinglées par SHA : un tag peut être déplacé, pas un SHA.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+
+  build:
+    needs: checks
+    runs-on: ubuntu-latest
+    env:
+      IMAGE: ghcr.io/antkock/bien
+      DOKPLOY_URL: ${{ secrets.DOKPLOY_URL }}
+      DOKPLOY_TOKEN: ${{ secrets.DOKPLOY_TOKEN }}
+      DOKPLOY_APP_ID: ${{ secrets.DOKPLOY_APP_ID }}
+      APP_URL: ${{ vars.APP_URL }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE }}:main
+            ${{ env.IMAGE }}:main-${{ github.sha }}
+          build-args: |
+            GIT_COMMIT_SHA=${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Déploiement Dokploy
+        if: ${{ env.DOKPLOY_TOKEN != '' }}
+        run: |
+          curl -fsS -X POST "${DOKPLOY_URL%/}/api/application.deploy" \
+            -H "x-api-key: $DOKPLOY_TOKEN" \
+            -H "Content-Type: application/json" \
+            -H "accept: application/json" \
+            -d "{\"applicationId\":\"$DOKPLOY_APP_ID\"}"
+
+      # /api/version doit renvoyer le SHA de ce commit. Le déploiement est
+      # asynchrone : on interroge toutes les 10 s pendant 5 min.
+      - name: Vérification
+        if: ${{ env.DOKPLOY_TOKEN != '' && env.APP_URL != '' }}
+        run: |
+          attendu="${{ github.sha }}"
+          url="${APP_URL%/}/api/version"
+          for i in $(seq 1 30); do
+            recu="$(curl -fsS --max-time 10 "$url" | jq -r '.buildId' 2>/dev/null || true)"
+            echo "[$i/30] $url → ${recu:-(pas de réponse)}"
+            [ "$recu" = "$attendu" ] && exit 0
+            sleep 10
+          done
+          echo "::error::$url ne renvoie pas le build $attendu après 5 min"
+          exit 1

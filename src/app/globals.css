@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* Tokens de docs/design/bien-ds.css, exposés à Tailwind.
+   Trois familles de couleur, pas plus : accent (bleu-vert), pose (ochre des jokers),
+   joker (terracotta du non prévu et du hors budget). Aucun rouge. */
+@theme {
+  --color-*: initial;
+  --color-white: #fff;
+  --color-transparent: transparent;
+  --color-cream: #f1efe9;
+  --color-paper: #fbfaf6;
+  --color-ink: #1a1a18;
+  --color-muted: #6e706a;
+  --color-faint: #a3a29c;
+  --color-border: #e2ded5;
+  --color-accent: #46707a;
+  --color-accent-d: #35585f;
+  --color-soft: rgba(70, 112, 122, 0.1);
+  --color-soft2: rgba(70, 112, 122, 0.22);
+  --color-pose: #a0863c;
+  --color-joker: #b0673b;
+  /* dérivés écrits en dur dans les maquettes */
+  --color-pose-text: #8a6f26;
+  --color-joker-text: #8d5330;
+  --color-box: #d5d0c6;
+  --color-chevron: #c9c6be;
+  --color-dash: #d8d3c9;
+  --color-nav-off: #b5b3ad;
+
+  --radius-*: initial;
+  --radius-card: 15px;
+  --radius-week: 20px;
+  --radius-btn: 12px;
+  --radius-field: 11px;
+  --radius-box: 6px;
+  --radius-ic: 11px;
+  --radius-pill: 999px;
+  --radius-sheet: 24px;
+
+  --shadow-*: initial;
+  --shadow-card:
+    0 1px 2px rgba(53, 88, 95, 0.05), 0 4px 12px rgba(53, 88, 95, 0.07),
+    0 12px 28px rgba(0, 0, 0, 0.03);
+  --shadow-btn: 0 2px 6px rgba(53, 88, 95, 0.22), 0 8px 18px rgba(53, 88, 95, 0.12);
+  --shadow-focus: 0 0 0 3px rgba(70, 112, 122, 0.09);
+
+  --background-image-btn: linear-gradient(155deg, #4d7b85, #35585f);
+}
+
+@theme inline {
+  --font-*: initial;
+  --font-disp: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-dm-mono), ui-monospace, monospace;
+}
+
+html {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  min-height: 100dvh;
+}
