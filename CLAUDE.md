@@ -4,20 +4,21 @@ App de rituel du dimanche pour un foyer de deux personnes : préparer la semaine
 
 ## Où lire quoi
 
-Les spécifications et maquettes viennent d'un vault privé et sont copiées dans `docs/`, **volontairement hors git** (données personnelles : ne jamais les commiter, ne jamais en recopier dans le code, les tests, les seeds ou ce fichier). Si `docs/` est absent, demander à l'utilisateur de le resynchroniser avant de travailler sur une phase.
+Les spécifications et maquettes sont dans `docs/`, **volontairement hors git** (données personnelles : ne jamais les commiter, ne jamais en recopier dans le code, les tests, les seeds ou ce fichier). Elles viennent à l'origine d'un vault privé, mais **depuis le 10 septembre 2026 le dépôt travaille en autonomie : `docs/` est la référence, on ne resynchronise plus avec le vault.** Si `docs/` est absent, demander à l'utilisateur de le restaurer avant de travailler sur une phase.
 
 Ordre de lecture avant tout travail :
 
-1. `PLAN.md` — le plan par phases, agréé. Chaque phase se détaille à son démarrage, jamais avant.
-2. `docs/design/README.md` puis `docs/design/20.regles-ux.md` — les six règles d'homogénéité. **Les réintroduire en double est le principal risque du développement.**
-3. `docs/30.app-regles-metier.md` — modèle et règles de calcul.
-4. `docs/design/30.ecrans.md`, `00.tokens.md`, `10.composants.md` au moment de coder ; `Bien - L'application.html` est la référence visuelle (21 écrans).
+1. `PLAN.md` — le plan par phases, agréé. Chaque phase se détaille à son démarrage, jamais avant. Les phases terminées y sont marquées.
+2. `docs/32.decisions-dev.md` — les décisions prises phase par phase (revues critiques, choix validés, infra). C'est là qu'on écrit le résultat de chaque revue.
+3. `docs/design/README.md` puis `docs/design/20.regles-ux.md` — les six règles d'homogénéité. **Les réintroduire en double est le principal risque du développement.**
+4. `docs/30.app-regles-metier.md` — modèle et règles de calcul.
+5. `docs/design/30.ecrans.md`, `00.tokens.md`, `10.composants.md` au moment de coder ; `Bien - L'application.html` est la référence visuelle (21 écrans).
 
 **Les maquettes font foi sur tout ce qui est visible.** `docs/archives/30.app.md` est l'ancien brief, périmé : ne pas s'en servir.
 
 ## Méthode
 
-- **Chaque phase s'ouvre par une revue critique** des écrans et règles concernés : zones floues, flows non réfléchis, écarts maquette / règles, cas non dessinés. Le résultat est une liste de questions tranchées avec l'utilisateur, puis reportée dans `docs/` (côté vault) pour que les documents restent la référence. Les documents fournis sont une base complète, pas une vérité finale.
+- **Chaque phase s'ouvre par une revue critique** des écrans et règles concernés : zones floues, flows non réfléchis, écarts maquette / règles, cas non dessinés. Le résultat est une liste de questions tranchées avec l'utilisateur, puis reportée dans `docs/32.decisions-dev.md` pour que les documents restent la référence. Les documents fournis sont une base complète, pas une vérité finale.
 - **Les tableaux d'exemples du document de règles deviennent des tests** de `domain/`, relus ensemble avant l'UI.
 - Chaque phase se termine par une revue sur téléphone, écran par écran contre la maquette, puis un dimanche d'usage réel.
 - Un seul environnement déployé jusqu'à la mise en prod native.

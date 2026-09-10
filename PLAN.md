@@ -45,7 +45,9 @@ src/
 
 ---
 
-## Phase 0 — Socle
+## Phase 0 — Socle ✔ terminée le 10 septembre 2026
+
+*Décisions et écarts : `docs/32.decisions-dev.md`. En résumé : Node 24 et npm 11 partout ; migrations appliquées au démarrage du conteneur par un script `pg` pur ; redirections relatives, aucune origine à configurer ; sauvegarde de la base par cron `pg_dump` sur le VPS plutôt que par Dokploy (qui exige un S3) ; DNS à créer avant le domaine Dokploy. Déployé sur `bien.anthonykocken.fr`.*
 
 **Objectif :** une app vide, déployée, avec l'écran de code foyer, et une base de code dont l'arborescence ne bougera plus.
 
