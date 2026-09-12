@@ -4,9 +4,20 @@ import { foyerCourant } from "@/lib/foyer-courant";
 
 // En-tête d'écran (`.hd`) : titre 24 px disp, sous-titre 12.5 px muted, et à
 // droite ce que l'écran y met (mot-repère, lien accent, bouton icône).
-export function Entete({ titre, sousTitre, droite }: { titre: string; sousTitre?: string; droite?: ReactNode }) {
+export function Entete({
+  titre,
+  sousTitre,
+  droite,
+  gauche,
+}: {
+  titre: string;
+  sousTitre?: string;
+  droite?: ReactNode;
+  gauche?: ReactNode;
+}) {
   return (
     <header className="flex items-center px-5 pb-3.5 pt-1.5">
+      {gauche}
       <div>
         <h1 className="font-disp text-[24px] font-medium leading-[1.15] tracking-[-0.2px]">{titre}</h1>
         {sousTitre && <div className="text-[12.5px] text-muted">{sousTitre}</div>}
