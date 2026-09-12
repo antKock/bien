@@ -1,0 +1,1016 @@
+{
+  "id": "88434340-211a-4ba5-9d7b-eb25ad9d9027",
+  "prevId": "6b35c8e4-c0de-4483-88cc-f597c0e6bd00",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.ecart": {
+      "name": "ecart",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "semaine_id": {
+          "name": "semaine_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "jour": {
+          "name": "jour",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "type_ecart",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nom_id": {
+          "name": "nom_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "modifie_le": {
+          "name": "modifie_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "retire_le": {
+          "name": "retire_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ecart_semaine_id_semaine_id_fk": {
+          "name": "ecart_semaine_id_semaine_id_fk",
+          "tableFrom": "ecart",
+          "tableTo": "semaine",
+          "columnsFrom": [
+            "semaine_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "ecart_nom_id_nom_conserve_id_fk": {
+          "name": "ecart_nom_id_nom_conserve_id_fk",
+          "tableFrom": "ecart",
+          "tableTo": "nom_conserve",
+          "columnsFrom": [
+            "nom_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "ecart_semaine_jour_type": {
+          "name": "ecart_semaine_jour_type",
+          "nullsNotDistinct": false,
+          "columns": [
+            "semaine_id",
+            "jour",
+            "type"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "ecart_jour": {
+          "name": "ecart_jour",
+          "value": "\"ecart\".\"jour\" BETWEEN 1 AND 7"
+        },
+        "ecart_autre_nomme": {
+          "name": "ecart_autre_nomme",
+          "value": "(\"ecart\".\"type\" = 'autre') = (\"ecart\".\"nom_id\" IS NOT NULL)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.foyer": {
+      "name": "foyer",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "slug": {
+          "name": "slug",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "est_test": {
+          "name": "est_test",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "foyer_slug_unique": {
+          "name": "foyer_slug_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "slug"
+          ]
+        },
+        "foyer_code_unique": {
+          "name": "foyer_code_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "code"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.ingredient": {
+      "name": "ingredient",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "recette_id": {
+          "name": "recette_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nom": {
+          "name": "nom",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "quantite": {
+          "name": "quantite",
+          "type": "numeric(8, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unite": {
+          "name": "unite",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rayon": {
+          "name": "rayon",
+          "type": "rayon",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ordre": {
+          "name": "ordre",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "ingredient_recette_id_recette_id_fk": {
+          "name": "ingredient_recette_id_recette_id_fk",
+          "tableFrom": "ingredient",
+          "tableTo": "recette",
+          "columnsFrom": [
+            "recette_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.mesure": {
+      "name": "mesure",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "semaine_id": {
+          "name": "semaine_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "personne_id": {
+          "name": "personne_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "type_mesure",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "valeur": {
+          "name": "valeur",
+          "type": "numeric(5, 1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "modifie_le": {
+          "name": "modifie_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "mesure_semaine_id_semaine_id_fk": {
+          "name": "mesure_semaine_id_semaine_id_fk",
+          "tableFrom": "mesure",
+          "tableTo": "semaine",
+          "columnsFrom": [
+            "semaine_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "mesure_personne_id_personne_id_fk": {
+          "name": "mesure_personne_id_personne_id_fk",
+          "tableFrom": "mesure",
+          "tableTo": "personne",
+          "columnsFrom": [
+            "personne_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "mesure_semaine_personne_type": {
+          "name": "mesure_semaine_personne_type",
+          "nullsNotDistinct": false,
+          "columns": [
+            "semaine_id",
+            "personne_id",
+            "type"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.nom_conserve": {
+      "name": "nom_conserve",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "foyer_id": {
+          "name": "foyer_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "usage": {
+          "name": "usage",
+          "type": "usage_nom",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "libelle": {
+          "name": "libelle",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "nom_conserve_unique": {
+          "name": "nom_conserve_unique",
+          "columns": [
+            {
+              "expression": "foyer_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "usage",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "lower(\"libelle\")",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "nom_conserve_foyer_id_foyer_id_fk": {
+          "name": "nom_conserve_foyer_id_foyer_id_fk",
+          "tableFrom": "nom_conserve",
+          "tableTo": "foyer",
+          "columnsFrom": [
+            "foyer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.personne": {
+      "name": "personne",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "foyer_id": {
+          "name": "foyer_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prenom": {
+          "name": "prenom",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ordre": {
+          "name": "ordre",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "personne_foyer_id_foyer_id_fk": {
+          "name": "personne_foyer_id_foyer_id_fk",
+          "tableFrom": "personne",
+          "tableTo": "foyer",
+          "columnsFrom": [
+            "foyer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "personne_foyer_ordre": {
+          "name": "personne_foyer_ordre",
+          "nullsNotDistinct": false,
+          "columns": [
+            "foyer_id",
+            "ordre"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.plat_semaine": {
+      "name": "plat_semaine",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "semaine_id": {
+          "name": "semaine_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recette_id": {
+          "name": "recette_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nom_id": {
+          "name": "nom_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "repas": {
+          "name": "repas",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "repas_cuisines": {
+          "name": "repas_cuisines",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "modifie_le": {
+          "name": "modifie_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "plat_semaine_semaine_id_semaine_id_fk": {
+          "name": "plat_semaine_semaine_id_semaine_id_fk",
+          "tableFrom": "plat_semaine",
+          "tableTo": "semaine",
+          "columnsFrom": [
+            "semaine_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "plat_semaine_recette_id_recette_id_fk": {
+          "name": "plat_semaine_recette_id_recette_id_fk",
+          "tableFrom": "plat_semaine",
+          "tableTo": "recette",
+          "columnsFrom": [
+            "recette_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "plat_semaine_nom_id_nom_conserve_id_fk": {
+          "name": "plat_semaine_nom_id_nom_conserve_id_fk",
+          "tableFrom": "plat_semaine",
+          "tableTo": "nom_conserve",
+          "columnsFrom": [
+            "nom_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "plat_semaine_recette": {
+          "name": "plat_semaine_recette",
+          "nullsNotDistinct": false,
+          "columns": [
+            "semaine_id",
+            "recette_id"
+          ]
+        },
+        "plat_semaine_nom": {
+          "name": "plat_semaine_nom",
+          "nullsNotDistinct": false,
+          "columns": [
+            "semaine_id",
+            "nom_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "plat_semaine_source": {
+          "name": "plat_semaine_source",
+          "value": "(\"plat_semaine\".\"recette_id\" IS NULL) <> (\"plat_semaine\".\"nom_id\" IS NULL)"
+        },
+        "plat_semaine_repas": {
+          "name": "plat_semaine_repas",
+          "value": "\"plat_semaine\".\"repas\" BETWEEN 1 AND 4 AND \"plat_semaine\".\"repas_cuisines\" BETWEEN 0 AND \"plat_semaine\".\"repas\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.recette": {
+      "name": "recette",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "nom": {
+          "name": "nom",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duree": {
+          "name": "duree",
+          "type": "duree_recette",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "portions_par_lot": {
+          "name": "portions_par_lot",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scalabilite": {
+          "name": "scalabilite",
+          "type": "scalabilite",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mijote_id": {
+          "name": "mijote_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "image_url": {
+          "name": "image_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lien_url": {
+          "name": "lien_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "recette_mijote_id_unique": {
+          "name": "recette_mijote_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "mijote_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.seance": {
+      "name": "seance",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "semaine_id": {
+          "name": "semaine_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "personne_id": {
+          "name": "personne_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "activite": {
+          "name": "activite",
+          "type": "activite",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nom_id": {
+          "name": "nom_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "jour": {
+          "name": "jour",
+          "type": "smallint",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "creneau": {
+          "name": "creneau",
+          "type": "creneau",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "faite": {
+          "name": "faite",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "modifie_le": {
+          "name": "modifie_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "seance_semaine_id_semaine_id_fk": {
+          "name": "seance_semaine_id_semaine_id_fk",
+          "tableFrom": "seance",
+          "tableTo": "semaine",
+          "columnsFrom": [
+            "semaine_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "seance_personne_id_personne_id_fk": {
+          "name": "seance_personne_id_personne_id_fk",
+          "tableFrom": "seance",
+          "tableTo": "personne",
+          "columnsFrom": [
+            "personne_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "seance_nom_id_nom_conserve_id_fk": {
+          "name": "seance_nom_id_nom_conserve_id_fk",
+          "tableFrom": "seance",
+          "tableTo": "nom_conserve",
+          "columnsFrom": [
+            "nom_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "seance_jour": {
+          "name": "seance_jour",
+          "value": "\"seance\".\"jour\" BETWEEN 1 AND 7"
+        },
+        "seance_autre_nommee": {
+          "name": "seance_autre_nommee",
+          "value": "(\"seance\".\"activite\" = 'autre') = (\"seance\".\"nom_id\" IS NOT NULL)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.semaine": {
+      "name": "semaine",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "foyer_id": {
+          "name": "foyer_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "debut": {
+          "name": "debut",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "validee_le": {
+          "name": "validee_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cloturee_le": {
+          "name": "cloturee_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rouverte_le": {
+          "name": "rouverte_le",
+          "type": "timestamp with time zone[]",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'{}'"
+        },
+        "jokers_valides_le": {
+          "name": "jokers_valides_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cree_le": {
+          "name": "cree_le",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "semaine_foyer_id_foyer_id_fk": {
+          "name": "semaine_foyer_id_foyer_id_fk",
+          "tableFrom": "semaine",
+          "tableTo": "foyer",
+          "columnsFrom": [
+            "foyer_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "semaine_foyer_debut": {
+          "name": "semaine_foyer_debut",
+          "nullsNotDistinct": false,
+          "columns": [
+            "foyer_id",
+            "debut"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.activite": {
+      "name": "activite",
+      "schema": "public",
+      "values": [
+        "course",
+        "pilates",
+        "renfo",
+        "velo",
+        "autre"
+      ]
+    },
+    "public.creneau": {
+      "name": "creneau",
+      "schema": "public",
+      "values": [
+        "matin",
+        "midi",
+        "soir"
+      ]
+    },
+    "public.duree_recette": {
+      "name": "duree_recette",
+      "schema": "public",
+      "values": [
+        "express",
+        "rapide",
+        "long"
+      ]
+    },
+    "public.rayon": {
+      "name": "rayon",
+      "schema": "public",
+      "values": [
+        "primeur",
+        "boucher",
+        "poissonnier",
+        "cremerie",
+        "epicerie",
+        "surgeles",
+        "epices_base"
+      ]
+    },
+    "public.scalabilite": {
+      "name": "scalabilite",
+      "schema": "public",
+      "values": [
+        "continu",
+        "par_lot"
+      ]
+    },
+    "public.type_ecart": {
+      "name": "type_ecart",
+      "schema": "public",
+      "values": [
+        "apero_riche",
+        "alcool",
+        "repas_riche",
+        "extra_sucre",
+        "autre"
+      ]
+    },
+    "public.type_mesure": {
+      "name": "type_mesure",
+      "schema": "public",
+      "values": [
+        "poids",
+        "tour_taille"
+      ]
+    },
+    "public.usage_nom": {
+      "name": "usage_nom",
+      "schema": "public",
+      "values": [
+        "autre",
+        "plat_libre",
+        "activite"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

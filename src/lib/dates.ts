@@ -1,6 +1,8 @@
-// Dates du rituel, lues en heure de Paris. La semaine commence le lundi (phase 2).
+// Formats d'affichage des dates, en heure de Paris. Le calendrier lui-même
+// (jours civils, lundis, minuit) vit dans `domain/jours`.
+import { FUSEAU } from "@/domain/jours";
 
-export const FUSEAU = "Europe/Paris";
+export { FUSEAU };
 
 /** « dimanche 16 novembre » */
 export function formatJourLong(date: Date): string {

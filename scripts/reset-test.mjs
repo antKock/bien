@@ -1,13 +1,12 @@
 // Remet le foyer de test à zéro : efface tout ce qui lui est rattaché, sauf le
-// foyer lui-même et ses deux personnes. À compléter à chaque table ajoutée
-// (une ligne par table portant un foyer_id, dans l'ordre des dépendances).
+// foyer lui-même et ses deux personnes. Une ligne par table portant un
+// foyer_id, dans l'ordre des dépendances ; les tables rattachées à une semaine
+// (mesure, ecart, plat_semaine, seance) suivent par cascade.
 //   dev  : npm run db:reset-test
 //   prod : docker exec <conteneur> node scripts/reset-test.mjs
 import { Pool } from "pg";
 
-const TABLES_PAR_FOYER = [
-  // phase 1 : "mesure", "joker", "autre_nomme", "plat_de_la_semaine", "plat_libre", "seance", "semaine"
-];
+const TABLES_PAR_FOYER = ["semaine", "nom_conserve"];
 
 const url = process.env.DATABASE_URL;
 if (!url) {
