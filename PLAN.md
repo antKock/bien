@@ -60,7 +60,9 @@ src/
 
 **Sortie :** l'écran 01 s'ouvre sur le domaine, un code mène à une page vide, la CI est verte.
 
-## Phase 1 — Modèle et règles
+## Phase 1 — Modèle et règles ✔ terminée le 12 septembre 2026
+
+*Décisions et écarts : `docs/32.decisions-dev.md`. En résumé : le dimanche clôt sa semaine et prépare la suivante ; l'état d'une semaine se déduit de ses horodatages, sans colonne `statut` ; validation acquise le lundi minuit, clôture toujours manuelle ; une seule règle prévu / non prévu pour les trois sujets ; l'écart est l'entité des jokers, retiré et non supprimé après validation ; geste « Valider » sur la grille des jokers ; une seule table de noms conservés ; `modifie_le` simple au lieu de `modifie_le[]`. Document de règles passé en v3, 100 tests de domaine.*
 
 **Objectif :** figer le modèle et prouver les calculs avant tout écran.
 
