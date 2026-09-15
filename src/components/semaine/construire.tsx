@@ -2,7 +2,10 @@ import { cloturerSemaine, rouvrirSemaine, validerSemaine } from "@/app/(app)/sem
 import { Bouton } from "@/components/ds/Bouton";
 import { Chip } from "@/components/ds/Chip";
 import type { Personne } from "@/db/schema";
+import { infoRecette, type RecetteChargee } from "@/db/recettes";
 import { infoDe, type SemaineChargee } from "@/db/semaines";
+import { listeCourses } from "@/domain/plats";
+import { platsDeLaSemaine } from "@/lib/plats";
 import { jourDe, type Jour } from "@/domain/jours";
 import { etatSemaine, semaineVierge, type EtatSemaine } from "@/domain/semaine";
 import { nomSemaine, numeroDuJour } from "@/lib/dates";
@@ -24,35 +27,43 @@ export function titreSemaine(debut: Jour, passee: boolean): string {
   return `Semaine ${nomSemaine(debut, passee)}`;
 }
 
-export function CarteDeSemaine({
+export async function CarteDeSemaine({
   debut,
   semaine,
   personnes,
   aujourdhui,
+  recettes,
 }: {
   debut: Jour;
   semaine: SemaineChargee | null;
   personnes: Personne[];
   aujourdhui: Jour;
+  recettes: RecetteChargee[];
 }) {
   const info = semaine ? infoDe(semaine) : semaineVierge(debut);
   const etat = etatSemaine(info, aujourdhui);
   const mesures = semaine?.mesures ?? [];
   const seances = semaine?.seances ?? [];
   const ecarts = semaine?.ecarts ?? [];
+  const plats = semaine?.plats ?? [];
+  const vues = await platsDeLaSemaine(semaine, info, recettes);
+  const nbArticles = listeCourses(
+    vues.flatMap((p) => (p.recette ? [{ recette: infoRecette(p.recette), repas: p.repas }] : [])),
+    personnes.length,
+  ).nbArticles;
   const cloturee = etat === "cloturee";
   const lien = (sujet: string) => (cloturee ? undefined : `/semaines/${debut}/${sujet}`);
 
   const brutes: LigneSujet[] = [
     { sujet: "mesures", libelle: "Mesures", href: lien("mesures"), ...ligneMesures(mesures, personnes, etat) },
     { sujet: "jokers", libelle: "Jokers", href: lien("jokers"), ...ligneJokers(ecarts, info, etat, aujourdhui) },
-    { sujet: "plats", libelle: "Plats", ...lignePlats() },
+    { sujet: "plats", libelle: "Plats", href: lien("plats"), ...lignePlats(plats, nbArticles, info, etat) },
     { sujet: "activite", libelle: "Activité", href: lien("activite"), ...ligneActivite(seances, personnes, info, etat, aujourdhui) },
   ];
   const lignes = brutes.map((l): LigneSujet => (cloturee ? { ...l, ton: "vide", pastille: undefined } : l));
 
   if (etat === "a_preparer") {
-    const vide = mesures.length === 0 && seances.length === 0 && ecarts.length === 0;
+    const vide = mesures.length === 0 && seances.length === 0 && ecarts.length === 0 && plats.length === 0;
     return (
       <CarteSemaine
         titre={titreSemaine(debut, false)}

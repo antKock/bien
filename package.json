@@ -13,7 +13,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "node --env-file=.env scripts/migrate.mjs",
     "db:seed": "node --env-file=.env scripts/seed.mjs",
-    "db:reset-test": "node --env-file=.env scripts/reset-test.mjs"
+    "db:reset-test": "node --env-file=.env scripts/reset-test.mjs",
+    "db:seed-recettes": "node --env-file=.env scripts/seed-recettes.mjs"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.1",

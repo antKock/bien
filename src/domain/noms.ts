@@ -1,7 +1,7 @@
 // Les noms conservés : « autre » des jokers, plat libre, activité « autre ».
 // Une même feuille de nommage pour les trois, une même table.
 
-export const USAGES_NOM = ["autre", "plat_libre", "activite"] as const;
+export const USAGES_NOM = ["autre", "plat_libre", "activite", "article"] as const;
 export type UsageNom = (typeof USAGES_NOM)[number];
 
 export const LONGUEUR_NOM_MAX = 40;

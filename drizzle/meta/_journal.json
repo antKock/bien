@@ -15,6 +15,13 @@
       "when": 1789197847786,
       "tag": "0001_modele",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789498709264,
+      "tag": "0002_courses",
+      "breakpoints": true
     }
   ]
 }

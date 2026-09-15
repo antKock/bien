@@ -138,3 +138,44 @@ export function repasCuisinesApresCoche(plat: PlatConfirmation, n: number, coche
 export function repasCuisinesApresStepper(plat: PlatConfirmation, repas: number): number {
   return Math.min(plat.repasCuisines, repas);
 }
+
+// Clé et affichage d'un article.
+
+/** La clé d'un article agrégé : nom normalisé et unité ; sert aux coches de la liste. */
+export function cleArticle(a: Pick<Article, "nom" | "unite">): string {
+  return `${normaliserNom(a.nom)}|${(a.unite ?? "").trim().toLowerCase()}`;
+}
+
+const SANS_PLURIEL = new Set(["g", "kg", "ml", "cl", "l", "cs", "cc", "càs", "càc"]);
+
+function formatNombre(n: number): string {
+  const arrondi = Math.round(n * 10) / 10;
+  return String(arrondi).replace(".", ",");
+}
+
+const MESURABLES = new Set(["g", "kg", "ml", "cl", "l"]);
+
+/**
+ * « 8 », « 600 g », « 1,1 kg », « 3 boîtes », « à vérifier ». Ce qui se compte
+ * (pièces, boîtes, sachets) s'arrondit à l'entier supérieur : on n'achète pas
+ * 3,5 oignons.
+ */
+export function formatQuantite(quantite: number | null, unite: string | null): string {
+  if (quantite === null) return "à vérifier";
+  const u = (unite ?? "").trim();
+  if (!MESURABLES.has(u.toLowerCase())) {
+    const n = Math.ceil(quantite - 1e-9);
+    if (u === "" || u === "pièce") return String(n);
+    const pluriel = n >= 2 && !SANS_PLURIEL.has(u.toLowerCase()) && !u.endsWith("s");
+    return `${n} ${u}${pluriel ? "s" : ""}`;
+  }
+  if (u === "g" && quantite >= 1000) return `${formatNombre(quantite / 1000)} kg`;
+  if (u === "ml" && quantite >= 1000) return `${formatNombre(quantite / 1000)} l`;
+  return `${formatNombre(quantite)} ${u}`;
+}
+
+/** « Quiche ×3 · Tajine ×1 », ou « 3 plats » au-delà de deux provenances. */
+export function formatProvenance(provenances: Provenance[]): string {
+  if (provenances.length > 2) return `${provenances.length} plats`;
+  return provenances.map((p) => `${p.plat} ×${p.repas}`).join(" · ");
+}

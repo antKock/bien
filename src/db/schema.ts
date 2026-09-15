@@ -105,7 +105,7 @@ export const mesure = pgTable(
 
 // Les noms saisis librement, conservés et reproposés : « autre » des jokers,
 // plat libre, activité « autre ». Une table pour les trois usages.
-export const usageNom = pgEnum("usage_nom", ["autre", "plat_libre", "activite"]);
+export const usageNom = pgEnum("usage_nom", ["autre", "plat_libre", "activite", "article"]);
 
 export const nomConserve = pgTable(
   "nom_conserve",
@@ -221,6 +221,28 @@ export const platSemaine = pgTable(
   ],
 );
 
+// ---------------------------------------------------------------- liste de courses
+
+// La liste se recalcule depuis les plats ; on ne stocke que ce qu'elle ne
+// peut pas déduire : les articles cochés (« réglé ») et ceux ajoutés à la main.
+export const course = pgTable(
+  "course",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    semaineId: uuid("semaine_id")
+      .notNull()
+      .references(() => semaine.id, { onDelete: "cascade" }),
+    // Article déduit : nom normalisé + unité. Article à la main : « libre:<nom_id> ».
+    cle: text("cle").notNull(),
+    // Présent pour un article ajouté à la main.
+    nomId: uuid("nom_id").references(() => nomConserve.id),
+    cochee: boolean("cochee").notNull().default(false),
+    creeLe: creeLe(),
+    modifieLe: modifieLe(),
+  },
+  (t) => [unique("course_semaine_cle").on(t.semaineId, t.cle)],
+);
+
 // ---------------------------------------------------------------- activité
 
 export const activite = pgEnum("activite", ["course", "pilates", "renfo", "velo", "autre"]);
@@ -263,3 +285,4 @@ export type Recette = typeof recette.$inferSelect;
 export type Ingredient = typeof ingredient.$inferSelect;
 export type PlatSemaine = typeof platSemaine.$inferSelect;
 export type Seance = typeof seance.$inferSelect;
+export type Course = typeof course.$inferSelect;

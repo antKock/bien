@@ -3,6 +3,7 @@
 import type { Ecart, Mesure, Personne, Seance } from "@/db/schema";
 import { prochaineSeance, resumeActivite } from "@/domain/activite";
 import { BUDGET_JOKERS, bilanJokers } from "@/domain/jokers";
+import { resumePlats } from "@/domain/plats";
 import { jourSemaine, type Jour } from "@/domain/jours";
 import { jokersAJour, sujetAJour, type EtatSemaine, type SemaineInfo } from "@/domain/semaine";
 import { JOURS_ABREGES, nomDuJour } from "@/lib/dates";
@@ -106,6 +107,26 @@ export function ligneJokers(ecarts: Ecart[], info: SemaineInfo, etat: EtatSemain
   };
 }
 
-export function lignePlats(): Ligne {
-  return { sousTitre: "Aucun plat choisi", aFaire: true, ton: "vide" };
+export type PlatResume = { repas: number; repasCuisines: number; creeLe: Date; modifieLe: Date | null };
+
+export function lignePlats(plats: PlatResume[], nbArticles: number, info: SemaineInfo, etat: EtatSemaine): Ligne {
+  if (plats.length === 0) return { sousTitre: "Aucun plat choisi", aFaire: true, ton: "vide" };
+  const r = resumePlats(plats);
+  const s = (n: number) => (n > 1 ? "s" : "");
+  if (etat === "a_preparer") {
+    return { sousTitre: `${r.plats} plat${s(r.plats)} · ${r.repas} repas · ${nbArticles} article${s(nbArticles)}`, ton: "plein" };
+  }
+  if (etat === "en_cours") {
+    return { sousTitre: `${r.repas} repas · ${r.cuisines} cuisiné${s(r.cuisines)}`, ton: "plein" };
+  }
+  const non = r.repas - r.cuisines;
+  const dernierGeste = plats.reduce<Date | null>((d, x) => {
+    const g = x.modifieLe ?? x.creeLe;
+    return d === null || g > d ? g : d;
+  }, null);
+  return {
+    sousTitre: `${r.cuisines} repas cuisiné${s(r.cuisines)}${non > 0 ? ` · ${non} non cuisiné${s(non)}` : ""}`,
+    ton: "plein",
+    pastille: etat === "a_confirmer" ? { texte: sujetAJour(dernierGeste, info) ? "à jour" : "à remplir" } : undefined,
+  };
 }

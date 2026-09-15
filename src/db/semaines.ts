@@ -1,12 +1,30 @@
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "./index";
-import { ecart, mesure, seance, semaine, type Ecart, type Mesure, type Seance, type Semaine } from "./schema";
+import {
+  course,
+  ecart,
+  mesure,
+  platSemaine,
+  seance,
+  semaine,
+  type Course,
+  type Ecart,
+  type Mesure,
+  type PlatSemaine,
+  type Seance,
+  type Semaine,
+} from "./schema";
 import type { SemaineInfo } from "@/domain/semaine";
 import type { Jour } from "@/domain/jours";
 
 // Une semaine avec tout ce qu'il faut pour sa carte et ses écrans de sujet.
-// Les plats s'ajouteront ici en phase 4.
-export type SemaineChargee = Semaine & { mesures: Mesure[]; seances: Seance[]; ecarts: Ecart[] };
+export type SemaineChargee = Semaine & {
+  mesures: Mesure[];
+  seances: Seance[];
+  ecarts: Ecart[];
+  plats: PlatSemaine[];
+  courses: Course[];
+};
 
 export function infoDe(s: Semaine): SemaineInfo {
   return {
@@ -21,16 +39,20 @@ export function infoDe(s: Semaine): SemaineInfo {
 async function charger(rows: Semaine[]): Promise<SemaineChargee[]> {
   if (rows.length === 0) return [];
   const ids = rows.map((s) => s.id);
-  const [mesures, seances, ecarts] = await Promise.all([
+  const [mesures, seances, ecarts, plats, courses] = await Promise.all([
     db().select().from(mesure).where(inArray(mesure.semaineId, ids)),
     db().select().from(seance).where(inArray(seance.semaineId, ids)),
     db().select().from(ecart).where(inArray(ecart.semaineId, ids)),
+    db().select().from(platSemaine).where(inArray(platSemaine.semaineId, ids)),
+    db().select().from(course).where(inArray(course.semaineId, ids)),
   ]);
   return rows.map((s) => ({
     ...s,
     mesures: mesures.filter((m) => m.semaineId === s.id),
     seances: seances.filter((x) => x.semaineId === s.id),
     ecarts: ecarts.filter((x) => x.semaineId === s.id),
+    plats: plats.filter((x) => x.semaineId === s.id),
+    courses: courses.filter((x) => x.semaineId === s.id),
   }));
 }
 

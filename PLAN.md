@@ -99,7 +99,9 @@ src/
 
 **Sortie :** plafond et dépassement vérifiés sur téléphone ; un dimanche réel avec la grille de la semaine écoulée.
 
-## Phase 4 — Plats et liste de courses
+## Phase 4 — Plats et liste de courses ✔ livrée le 15 septembre 2026
+
+*Décisions et écarts : `docs/32.decisions-dev.md`. En résumé : la liste est toujours recalculée, seules les coches (« réglé ») et les articles ajoutés à la main sont stockés (table `course`) ; « − » à ×1 retire un plat ; les plats déjà retenus n'apparaissent pas dans l'ajout ; la feuille « Plat libre » ajoute tout d'un coup ; panier accessible dans tous les états non clôturés ; quantités comptables arrondies au supérieur ; cinq recettes de test seedées par `scripts/seed-recettes.mjs`. Revue sur téléphone reportée avec les phases 2 et 3.*
 
 **Objectif :** le cœur du produit selon le brief, construit sur les patterns déjà stables.
 

@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  cleArticle,
+  formatProvenance,
+  formatQuantite,
   listeCourses,
   lots,
   lotsDuPlat,
@@ -171,5 +174,28 @@ describe("confirmation des plats (écran 18)", () => {
   it("baisser le nombre de repas ne laisse jamais plus de cuisinés que de repas", () => {
     expect(repasCuisinesApresStepper({ repas: 3, repasCuisines: 3 }, 2)).toBe(2);
     expect(repasCuisinesApresStepper({ repas: 3, repasCuisines: 1 }, 4)).toBe(1);
+  });
+});
+
+describe("affichage d'un article", () => {
+  it("écrit la quantité selon l'unité", () => {
+    expect(formatQuantite(8, "pièce")).toBe("8");
+    expect(formatQuantite(600, "g")).toBe("600 g");
+    expect(formatQuantite(1125, "g")).toBe("1,1 kg");
+    expect(formatQuantite(3, "boîte")).toBe("3 boîtes");
+    expect(formatQuantite(1, "boîte")).toBe("1 boîte");
+    expect(formatQuantite(1.5, "kg")).toBe("1,5 kg");
+    expect(formatQuantite(3.5, "pièce")).toBe("4");
+    expect(formatQuantite(1.5, "boîte")).toBe("2 boîtes");
+    expect(formatQuantite(2.5, "sachet")).toBe("3 sachets");
+    expect(formatQuantite(null, null)).toBe("à vérifier");
+  });
+  it("rappelle la provenance, ou compte les plats au-delà de deux", () => {
+    expect(formatProvenance([{ plat: "Chili", repas: 3 }, { plat: "Tajine", repas: 1 }])).toBe("Chili ×3 · Tajine ×1");
+    expect(formatProvenance([{ plat: "A", repas: 1 }, { plat: "B", repas: 1 }, { plat: "C", repas: 2 }])).toBe("3 plats");
+  });
+  it("la clé d'un article ignore casse, espaces et unité absente", () => {
+    expect(cleArticle({ nom: " Poivrons  rouges", unite: "pièce" })).toBe("poivrons rouges|pièce");
+    expect(cleArticle({ nom: "Huile d'olive", unite: null })).toBe("huile d'olive|");
   });
 });

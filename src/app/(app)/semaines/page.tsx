@@ -7,6 +7,7 @@ import { CarteDepliable } from "@/components/semaine/CarteDepliable";
 import { CarteFantome, CarteReduite } from "@/components/semaine/CarteSemaine";
 import { CarteDeSemaine, CHIPS, titreSemaine } from "@/components/semaine/construire";
 import { personnesDuFoyer } from "@/db/personnes";
+import { repertoire } from "@/db/recettes";
 import { infoDe, semainesDuFoyer } from "@/db/semaines";
 import { jourDe } from "@/domain/jours";
 import { composerOnglet } from "@/domain/onglet-semaines";
@@ -17,7 +18,11 @@ import { foyerCourant } from "@/lib/foyer-courant";
 // semaines passées réduites. Tout se déduit du jour et des lignes existantes.
 export default async function PageSemaines() {
   const foyer = (await foyerCourant())!;
-  const [semaines, personnes] = await Promise.all([semainesDuFoyer(foyer.id), personnesDuFoyer(foyer.id)]);
+  const [semaines, personnes, recettes] = await Promise.all([
+    semainesDuFoyer(foyer.id),
+    personnesDuFoyer(foyer.id),
+    repertoire(),
+  ]);
   const jour = aujourdhui();
   const onglet = composerOnglet(semaines.map(infoDe), jour);
   const parDebut = new Map(semaines.map((s) => [s.debut, s]));
@@ -27,7 +32,13 @@ export default async function PageSemaines() {
     return c ? jourDe(c) === jour : false;
   };
   const carte = (debut: string) => (
-    <CarteDeSemaine debut={debut} semaine={parDebut.get(debut) ?? null} personnes={personnes} aujourdhui={jour} />
+    <CarteDeSemaine
+      debut={debut}
+      semaine={parDebut.get(debut) ?? null}
+      personnes={personnes}
+      aujourdhui={jour}
+      recettes={recettes}
+    />
   );
 
   return (
