@@ -71,9 +71,21 @@ export default async function PagePlats({ params }: { params: Promise<{ debut: s
                 : (p.duree ?? "plat libre");
               return (
                 <div key={p.id} className="flex items-center gap-[11px] border-b border-[rgba(226,222,213,.9)] py-[13px] last:border-b-0">
-                  <Placeholder className="h-11 w-11 flex-none rounded-[10px]" />
+                  {p.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={p.image} alt="" className="h-11 w-11 flex-none rounded-[10px] object-cover" loading="lazy" />
+                  ) : (
+                    <Placeholder className="h-11 w-11 flex-none rounded-[10px]" />
+                  )}
                   <span className="min-w-0 flex-1 text-[13.5px] font-medium leading-[1.3]">
-                    {p.nom}
+                    {p.lien ? (
+                      // La recette s'ouvre dans Mijote : titre, photo et étapes vivent là-bas.
+                      <a href={p.lien} target="_blank" rel="noreferrer" className="underline decoration-soft2 underline-offset-[3px]">
+                        {p.nom}
+                      </a>
+                    ) : (
+                      p.nom
+                    )}
                     <span className="mt-[3px] block font-mono text-[9.5px] tracking-[0.02em] text-faint">{meta}</span>
                   </span>
                   {cloturee ? (

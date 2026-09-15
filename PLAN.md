@@ -112,7 +112,9 @@ src/
 
 **Sortie :** la liste de courses reproduit les cas du §2 (quiche ×3 = 2 lots, chili ×1,5) ; un dimanche réel avec plats et courses.
 
-## Phase 5 — Lien Mijote ⏸ en attente (décision du 15 septembre 2026, on passe à la phase 6)
+## Phase 5 — Lien Mijote ✔ livrée le 15 septembre 2026
+
+*Décisions et écarts : `docs/32.decisions-dev.md`. En résumé : **le répertoire, c'est le carnet Mijote** (code membre `MIJOTE_CARNET`), relu à l'ouverture de « Ajouter un plat » ; durée, portions, scalabilité et ingrédients avec rayon sont déduits du texte Mijote par `domain/mijote` (dictionnaire de rayons, dette de nomenclature assumée) ; route `GET /api/carnets/<code>/recettes` côté Mijote à secret partagé ; photos et liens publics stockés, Mijote injoignable = dernière version connue.*
 
 **Objectif :** titres, photos et liens viennent du carnet Mijote ; tout le reste reste dans Bien.
 

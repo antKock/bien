@@ -1,4 +1,4 @@
-import { asc, inArray } from "drizzle-orm";
+import { asc, eq, inArray } from "drizzle-orm";
 import { db } from "./index";
 import { ingredient, recette, type Ingredient, type Recette } from "./schema";
 import type { RecetteInfo } from "@/domain/plats";
@@ -14,9 +14,13 @@ export function infoRecette(r: RecetteChargee): RecetteInfo {
   };
 }
 
-/** Le répertoire complet, avec ses ingrédients, par nom. */
-export async function repertoire(): Promise<RecetteChargee[]> {
-  const recettes = await db().select().from(recette).orderBy(asc(recette.nom));
+/** Le répertoire complet, avec ses ingrédients, par nom ; `actif` = seulement ce qui est dans le carnet. */
+export async function repertoire(actif = false): Promise<RecetteChargee[]> {
+  const recettes = await db()
+    .select()
+    .from(recette)
+    .where(actif ? eq(recette.dansCarnet, true) : undefined)
+    .orderBy(asc(recette.nom));
   if (recettes.length === 0) return [];
   const ingredients = await db()
     .select()

@@ -12,6 +12,8 @@ export type PlatVue = {
   nom: string;
   duree: RecetteChargee["duree"] | null;
   recette: RecetteChargee | null;
+  image: string | null;
+  lien: string | null;
   repas: number;
   repasCuisines: number;
   nonPrevu: boolean;
@@ -37,6 +39,8 @@ export async function platsDeLaSemaine(
         nom: recette?.nom ?? noms.get(p.nomId ?? "") ?? "Plat libre",
         duree: recette?.duree ?? null,
         recette,
+        image: recette?.imageUrl ?? null,
+        lien: recette?.lienUrl ?? null,
         repas: p.repas,
         repasCuisines: p.repasCuisines,
         nonPrevu: estNonPrevu(p.creeLe, info),

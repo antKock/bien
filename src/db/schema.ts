@@ -178,6 +178,10 @@ export const recette = pgTable("recette", {
   mijoteId: text("mijote_id").unique(),
   imageUrl: text("image_url"),
   lienUrl: text("lien_url"),
+  // Faux quand la recette a quitté le carnet (ou n'en vient pas, une fois un
+  // carnet branché) : absente de l'ajout, encore connue des semaines passées.
+  dansCarnet: boolean("dans_carnet").notNull().default(true),
+  mijoteMajLe: horodatage("mijote_maj_le"),
   creeLe: creeLe(),
 });
 

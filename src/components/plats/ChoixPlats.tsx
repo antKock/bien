@@ -11,7 +11,7 @@ import { FeuilleNommage } from "@/components/nommage/FeuilleNommage";
 // Écrans 06 et 07 : la grille du répertoire, filtrée par durée, une case par
 // tuile (règle ③ : sélectionner, c'est cocher). La tuile « Plat libre » ouvre
 // la feuille de nommage, dont le CTA ajoute tout et revient aux plats.
-export type Tuile = { id: string; nom: string; duree: "express" | "rapide" | "long"; nbArticles: number };
+export type Tuile = { id: string; nom: string; duree: "express" | "rapide" | "long"; nbArticles: number; image: string | null };
 type Filtre = "tous" | Tuile["duree"];
 
 const FILTRES: { valeur: Filtre; libelle: string }[] = [
@@ -57,7 +57,12 @@ export function ChoixPlats({ debut, tuiles, nomsLibres }: { debut: string; tuile
                 onClick={() => basculer(t.id)}
                 className={`overflow-hidden rounded-card border bg-white text-left shadow-card ${on ? "border-soft2" : "border-border"}`}
               >
-                <Placeholder libelle="illustration Mijote" className="h-[84px]" />
+                {t.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={t.image} alt="" className="h-[84px] w-full object-cover" loading="lazy" />
+                ) : (
+                  <Placeholder libelle="illustration Mijote" className="h-[84px]" />
+                )}
                 <div className="px-[11px] py-2.5">
                   <b className="block text-[13px] font-semibold leading-[1.25]">{t.nom}</b>
                   <div className="mt-2 flex items-center">
