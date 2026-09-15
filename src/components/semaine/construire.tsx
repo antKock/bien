@@ -39,19 +39,20 @@ export function CarteDeSemaine({
   const etat = etatSemaine(info, aujourdhui);
   const mesures = semaine?.mesures ?? [];
   const seances = semaine?.seances ?? [];
+  const ecarts = semaine?.ecarts ?? [];
   const cloturee = etat === "cloturee";
   const lien = (sujet: string) => (cloturee ? undefined : `/semaines/${debut}/${sujet}`);
 
   const brutes: LigneSujet[] = [
     { sujet: "mesures", libelle: "Mesures", href: lien("mesures"), ...ligneMesures(mesures, personnes, etat) },
-    { sujet: "jokers", libelle: "Jokers", ...ligneJokers() },
+    { sujet: "jokers", libelle: "Jokers", href: lien("jokers"), ...ligneJokers(ecarts, info, etat, aujourdhui) },
     { sujet: "plats", libelle: "Plats", ...lignePlats() },
     { sujet: "activite", libelle: "Activité", href: lien("activite"), ...ligneActivite(seances, personnes, info, etat, aujourdhui) },
   ];
   const lignes = brutes.map((l): LigneSujet => (cloturee ? { ...l, ton: "vide", pastille: undefined } : l));
 
   if (etat === "a_preparer") {
-    const vide = mesures.length === 0 && seances.length === 0;
+    const vide = mesures.length === 0 && seances.length === 0 && ecarts.length === 0;
     return (
       <CarteSemaine
         titre={titreSemaine(debut, false)}

@@ -8,7 +8,9 @@ import {
   decocher,
   frequenceTypes,
   jauge,
+  jourCourantDe,
   type EcartInfo,
+  type Jeton,
   type TypeEcart,
 } from "./jokers";
 import { semaineVierge, type SemaineInfo } from "./semaine";
@@ -78,7 +80,14 @@ describe("la grille des maquettes", () => {
       ecart(7, "autre"),
     ];
     expect(coutTotal(grille)).toBe(5.5);
-    expect(jauge(5.5, 0)).toEqual(["consomme", "consomme", "consomme", "au_dela", "au_dela", "au_dela"]);
+    expect(jauge(5.5, 0)).toEqual([
+      { etat: "consomme", moitie: false },
+      { etat: "consomme", moitie: false },
+      { etat: "consomme", moitie: false },
+      { etat: "au_dela", moitie: false },
+      { etat: "au_dela", moitie: false },
+      { etat: "au_dela", moitie: true },
+    ]);
   });
 });
 
@@ -129,23 +138,35 @@ describe("posé, consommé, improvisé", () => {
 });
 
 describe("la jauge de trois jetons", () => {
+  const j = (etat: Jeton["etat"], moitie = false): Jeton => ({ etat, moitie });
+
   it("est libre quand rien n'est posé", () => {
     expect(BUDGET_JOKERS).toBe(3);
-    expect(jauge(0, 0)).toEqual(["libre", "libre", "libre"]);
+    expect(jauge(0, 0)).toEqual([j("libre"), j("libre"), j("libre")]);
   });
-  it("écran 04 : 1,5 posé → un jeton posé, un demi… en contour, un libre", () => {
-    expect(jauge(0, 1.5)).toEqual(["pose", "pose", "libre"]);
+  it("écran 04 : 1,5 posé → un jeton posé, un demi en contour, un libre", () => {
+    expect(jauge(0, 1.5)).toEqual([j("pose"), j("pose", true), j("libre")]);
   });
   it("écran 12 : 1 consommé, 2 encore à venir", () => {
-    expect(jauge(1, 2)).toEqual(["consomme", "pose", "pose"]);
+    expect(jauge(1, 2)).toEqual([j("consomme"), j("pose"), j("pose")]);
   });
-  it("remplit le consommé d'abord, un demi-jeton consommé se lit « demi »", () => {
-    expect(jauge(0.5, 1)).toEqual(["demi", "pose", "libre"]);
-    expect(jauge(1.5, 0)).toEqual(["consomme", "demi", "libre"]);
+  it("remplit le consommé d'abord ; un demi-jeton consommé se dessine à moitié", () => {
+    expect(jauge(0.5, 1)).toEqual([j("consomme", true), j("pose", true), j("libre")]);
+    expect(jauge(1.5, 0)).toEqual([j("consomme"), j("consomme", true), j("libre")]);
   });
   it("au-delà du budget, les jetons s'ajoutent à la file", () => {
-    expect(jauge(3.5, 0)).toEqual(["consomme", "consomme", "consomme", "au_dela"]);
-    expect(jauge(2, 2)).toEqual(["consomme", "consomme", "pose", "au_dela"]);
+    expect(jauge(3.5, 0)).toEqual([j("consomme"), j("consomme"), j("consomme"), j("au_dela", true)]);
+    expect(jauge(2, 2)).toEqual([j("consomme"), j("consomme"), j("pose"), j("au_dela")]);
+  });
+});
+
+describe("le jour courant d'une semaine", () => {
+  it("vaut 0 avant le lundi, le jour de la semaine pendant, 7 après ou une fois clôturée", () => {
+    expect(jourCourantDe(S17, "2025-11-16")).toBe(0);
+    expect(jourCourantDe(S17, "2025-11-18")).toBe(2);
+    expect(jourCourantDe(S17, "2025-11-23")).toBe(7);
+    expect(jourCourantDe(S17, "2025-12-05")).toBe(7);
+    expect(jourCourantDe({ ...S17, clotureeLe: CONFIRME }, "2025-11-16")).toBe(7);
   });
 });
 

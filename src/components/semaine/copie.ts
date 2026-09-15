@@ -1,9 +1,10 @@
 // Les sous-titres des quatre lignes de la carte : une phrase factuelle par
 // état, jamais un manque signalé. Les comptes viennent du domaine.
-import type { Mesure, Personne, Seance } from "@/db/schema";
+import type { Ecart, Mesure, Personne, Seance } from "@/db/schema";
 import { prochaineSeance, resumeActivite } from "@/domain/activite";
+import { BUDGET_JOKERS, bilanJokers } from "@/domain/jokers";
 import { jourSemaine, type Jour } from "@/domain/jours";
-import { sujetAJour, type EtatSemaine, type SemaineInfo } from "@/domain/semaine";
+import { jokersAJour, sujetAJour, type EtatSemaine, type SemaineInfo } from "@/domain/semaine";
 import { JOURS_ABREGES, nomDuJour } from "@/lib/dates";
 import type { LigneSujet } from "./CarteSemaine";
 
@@ -74,9 +75,35 @@ export function ligneActivite(
   };
 }
 
-// Jokers et plats n'arrivent qu'en phase 3 et 4 : leur ligne est là, vide.
-export function ligneJokers(): Ligne {
-  return { sousTitre: "Aucun posé · 3 par semaine", aFaire: true, ton: "vide" };
+/** « 1,5 » ; les jetons se comptent en demi-unités. */
+export function formatJetons(n: number): string {
+  return String(n).replace(".", ",");
+}
+
+// En français, le pluriel commence à 2 : « 1,5 posé », « 2 posés ».
+const jetons = (n: number, mot: string) => `${formatJetons(n)} ${mot}${n >= 2 ? "s" : ""}`;
+
+export function ligneJokers(ecarts: Ecart[], info: SemaineInfo, etat: EtatSemaine, aujourdhui: Jour): Ligne {
+  const vide = { sousTitre: `Aucun posé · ${BUDGET_JOKERS} par semaine`, aFaire: true, ton: "vide" as const };
+  if (ecarts.length === 0 && etat !== "a_confirmer") return vide;
+  const b = bilanJokers(ecarts, info, aujourdhui);
+  if (etat === "a_preparer") {
+    return { sousTitre: `${jetons(b.pose, "posé")} · ${BUDGET_JOKERS} par semaine`, ton: "jokers" };
+  }
+  if (etat === "en_cours") {
+    return { sousTitre: `${jetons(b.pose, "posé")} · ${jetons(b.consomme, "consommé")}`, ton: "jokers" };
+  }
+  const aJour = jokersAJour(info);
+  if (etat === "a_confirmer" && !aJour) {
+    return { sousTitre: "Les sept soirs, en une passe", aFaire: true, ton: "jokers", pastille: { texte: "à remplir", ton: "jokers" } };
+  }
+  const audela = b.consomme - BUDGET_JOKERS;
+  const suite = audela > 0 ? ` · ${formatJetons(audela)} au-delà` : b.improvise > 0 ? ` · ${jetons(b.improvise, "non prévu")}` : "";
+  return {
+    sousTitre: b.consomme === 0 ? "Aucun consommé" : `${jetons(b.consomme, "consommé")}${suite}`,
+    ton: b.consomme === 0 ? "vide" : "jokers",
+    pastille: etat === "a_confirmer" ? { texte: "à jour" } : undefined,
+  };
 }
 
 export function lignePlats(): Ligne {

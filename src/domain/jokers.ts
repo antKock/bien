@@ -1,7 +1,7 @@
 // Les jokers : une unité de fréquence, pas d'énergie. L'entité est l'écart
 // (une case de la grille 7 × 5) ; le coût d'une soirée se déduit.
+import { jourSemaine, type Jour } from "./jours";
 import { dateDuJour, estNonPrevu, estValidee, type SemaineInfo } from "./semaine";
-import type { Jour } from "./jours";
 
 export const BUDGET_JOKERS = 3;
 
@@ -49,25 +49,56 @@ export type BilanJokers = {
   soirees: number;
 };
 
-export function bilanJokers(ecarts: EcartInfo[], s: SemaineInfo, aujourdhui: Jour): BilanJokers {
-  const prevus = ecarts.filter((e) => !estNonPrevu(e.creeLe, s));
-  const presents = ecarts.filter(estPresent);
-  const passe = (e: EcartInfo) => s.clotureeLe !== null || dateDuJour(s.debut, e.jour) <= aujourdhui;
-  const consommes = presents.filter(passe);
-  const consomme = coutTotal(consommes);
+/** Une case de la grille telle que l'écran la connaît, sans horodatage. */
+export type CaseGrille = { jour: number; type: TypeEcart; present: boolean; prevu: boolean };
+
+export function caseDe(e: EcartInfo, s: SemaineInfo): CaseGrille {
+  return { jour: e.jour, type: e.type, present: estPresent(e), prevu: !estNonPrevu(e.creeLe, s) };
+}
+
+const coutCases = (cases: CaseGrille[]) =>
+  coutParJour(cases.map((c) => ({ jour: c.jour, type: c.type, creeLe: new Date(0), retireLe: null }))).reduce(
+    (a, b) => a + b,
+    0,
+  );
+
+/**
+ * Bilan sur des cases : `jourCourant` est le dernier jour (1-7) considéré comme
+ * passé, 0 si la semaine n'a pas commencé, 7 si elle est finie ou clôturée.
+ */
+export function bilanCases(cases: CaseGrille[], jourCourant: number): BilanJokers {
+  const presents = cases.filter((c) => c.present);
+  const consommes = presents.filter((c) => c.jour <= jourCourant);
+  const consomme = coutCases(consommes);
   return {
-    pose: coutTotal(prevus),
+    pose: coutCases(cases.filter((c) => c.prevu)),
     consomme,
-    improvise: consomme - coutTotal(consommes.filter((e) => !estNonPrevu(e.creeLe, s))),
-    aVenir: coutTotal(presents.filter((e) => !passe(e))),
-    soirees: coutParJour(presents).filter((c) => c > 0).length,
+    improvise: consomme - coutCases(consommes.filter((c) => c.prevu)),
+    aVenir: coutCases(presents.filter((c) => c.jour > jourCourant)),
+    soirees: coutParJour(
+      presents.map((c) => ({ jour: c.jour, type: c.type, creeLe: new Date(0), retireLe: null })),
+    ).filter((x) => x > 0).length,
   };
+}
+
+/** Le dernier jour passé de la semaine : 0 avant son lundi, 7 après son dimanche ou si clôturée. */
+export function jourCourantDe(s: SemaineInfo, aujourdhui: Jour): number {
+  if (s.clotureeLe !== null || aujourdhui > dateDuJour(s.debut, 7)) return 7;
+  if (aujourdhui < s.debut) return 0;
+  return jourSemaine(aujourdhui);
+}
+
+export function bilanJokers(ecarts: EcartInfo[], s: SemaineInfo, aujourdhui: Jour): BilanJokers {
+  return bilanCases(
+    ecarts.map((e) => caseDe(e, s)),
+    jourCourantDe(s, aujourdhui),
+  );
 }
 
 // La jauge : trois jetons, remplis par demi-unités, consommé d'abord puis
 // posé. Au-delà du budget, les jetons s'ajoutent à la file.
 
-export type Jeton = "consomme" | "demi" | "pose" | "libre" | "au_dela";
+export type Jeton = { etat: "consomme" | "pose" | "libre" | "au_dela"; moitie: boolean };
 
 export function jauge(consomme: number, aVenir: number, budget = BUDGET_JOKERS): Jeton[] {
   const moities: ("c" | "p")[] = [
@@ -78,11 +109,11 @@ export function jauge(consomme: number, aVenir: number, budget = BUDGET_JOKERS):
   const jetons: Jeton[] = [];
   for (let i = 0; i < nbJetons; i++) {
     const [a, b] = [moities[2 * i], moities[2 * i + 1]];
-    if (i >= budget) jetons.push("au_dela");
-    else if (a === "c" && b === "c") jetons.push("consomme");
-    else if (a === "c") jetons.push("demi");
-    else if (a === "p") jetons.push("pose");
-    else jetons.push("libre");
+    const moitie = a !== undefined && b === undefined;
+    if (i >= budget) jetons.push({ etat: "au_dela", moitie });
+    else if (a === "c") jetons.push({ etat: "consomme", moitie: b !== "c" });
+    else if (a === "p") jetons.push({ etat: "pose", moitie });
+    else jetons.push({ etat: "libre", moitie: false });
   }
   return jetons;
 }

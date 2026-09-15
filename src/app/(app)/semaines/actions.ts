@@ -3,7 +3,7 @@
 import { refresh } from "next/cache";
 import { infoDe, majSemaine, obtenirSemaine } from "@/db/semaines";
 import { cloturer, rouvrir, valider } from "@/domain/semaine";
-import { aujourdhui } from "@/lib/dates";
+import { aujourdhui, maintenant } from "@/lib/dates";
 import { foyerCourant } from "@/lib/foyer-courant";
 import { debutValide } from "@/lib/semaines";
 
@@ -18,18 +18,18 @@ async function semaineDuFoyer(debut: string) {
 
 export async function validerSemaine(debut: string): Promise<void> {
   const s = await semaineDuFoyer(debut);
-  await majSemaine(s.id, valider(infoDe(s), new Date(), aujourdhui()));
+  await majSemaine(s.id, valider(infoDe(s), maintenant(), aujourdhui()));
   refresh();
 }
 
 export async function cloturerSemaine(debut: string): Promise<void> {
   const s = await semaineDuFoyer(debut);
-  await majSemaine(s.id, cloturer(infoDe(s), new Date(), aujourdhui()));
+  await majSemaine(s.id, cloturer(infoDe(s), maintenant(), aujourdhui()));
   refresh();
 }
 
 export async function rouvrirSemaine(debut: string): Promise<void> {
   const s = await semaineDuFoyer(debut);
-  await majSemaine(s.id, rouvrir(infoDe(s), new Date()));
+  await majSemaine(s.id, rouvrir(infoDe(s), maintenant()));
   refresh();
 }

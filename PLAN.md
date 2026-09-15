@@ -86,7 +86,9 @@ src/
 
 **Sortie :** revue contre les maquettes ; premier dimanche réel avec pesée et séances. Reprise des mesures notées depuis le 1er septembre.
 
-## Phase 3 — Jokers
+## Phase 3 — Jokers ✔ livrée le 15 septembre 2026
+
+*Décisions et écarts : `docs/32.decisions-dev.md`. En résumé : une seule grille pour poser et confirmer, chaque coche enregistrée à l'instant avec affichage optimiste, jauge calculée côté client sur les mêmes règles que le domaine, lien « Valider » en confirmation, feuille de nommage pour « autre », sous-titres comptés en jetons. L'horloge de développement (`BIEN_AUJOURDHUI`) décale désormais aussi les horodatages. Revue sur téléphone reportée avec celle de la phase 2.*
 
 **Objectif :** la mécanique centrale, identique en pose et en confirmation.
 

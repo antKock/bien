@@ -9,6 +9,7 @@ export async function enregistrerMesure(
   personneId: string,
   type: TypeMesure,
   valeur: number | null,
+  quand: Date,
 ): Promise<void> {
   const ou = and(eq(mesure.semaineId, semaineId), eq(mesure.personneId, personneId), eq(mesure.type, type));
   if (valeur === null) {
@@ -17,9 +18,9 @@ export async function enregistrerMesure(
   }
   await db()
     .insert(mesure)
-    .values({ semaineId, personneId, type, valeur })
+    .values({ semaineId, personneId, type, valeur, creeLe: quand })
     .onConflictDoUpdate({
       target: [mesure.semaineId, mesure.personneId, mesure.type],
-      set: { valeur, modifieLe: new Date() },
+      set: { valeur, modifieLe: quand },
     });
 }

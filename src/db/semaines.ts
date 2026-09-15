@@ -1,12 +1,12 @@
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "./index";
-import { mesure, seance, semaine, type Mesure, type Seance, type Semaine } from "./schema";
+import { ecart, mesure, seance, semaine, type Ecart, type Mesure, type Seance, type Semaine } from "./schema";
 import type { SemaineInfo } from "@/domain/semaine";
 import type { Jour } from "@/domain/jours";
 
 // Une semaine avec tout ce qu'il faut pour sa carte et ses écrans de sujet.
-// Jokers et plats s'ajouteront ici en phase 3 et 4.
-export type SemaineChargee = Semaine & { mesures: Mesure[]; seances: Seance[] };
+// Les plats s'ajouteront ici en phase 4.
+export type SemaineChargee = Semaine & { mesures: Mesure[]; seances: Seance[]; ecarts: Ecart[] };
 
 export function infoDe(s: Semaine): SemaineInfo {
   return {
@@ -21,14 +21,16 @@ export function infoDe(s: Semaine): SemaineInfo {
 async function charger(rows: Semaine[]): Promise<SemaineChargee[]> {
   if (rows.length === 0) return [];
   const ids = rows.map((s) => s.id);
-  const [mesures, seances] = await Promise.all([
+  const [mesures, seances, ecarts] = await Promise.all([
     db().select().from(mesure).where(inArray(mesure.semaineId, ids)),
     db().select().from(seance).where(inArray(seance.semaineId, ids)),
+    db().select().from(ecart).where(inArray(ecart.semaineId, ids)),
   ]);
   return rows.map((s) => ({
     ...s,
     mesures: mesures.filter((m) => m.semaineId === s.id),
     seances: seances.filter((x) => x.semaineId === s.id),
+    ecarts: ecarts.filter((x) => x.semaineId === s.id),
   }));
 }
 
