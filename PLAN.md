@@ -73,7 +73,9 @@ src/
 
 **Sortie :** revue des cas de test ensemble — c'est la validation des specs. Tout écart trouvé corrige le document de règles, pas seulement le code.
 
-## Phase 2 — La semaine, Mesures et Activité
+## Phase 2 — La semaine, Mesures et Activité ✔ livrée le 12 septembre 2026
+
+*Décisions et écarts : `docs/32.decisions-dev.md`. En résumé : onglet composé par le domaine (semaine à confirmer en carte pleine, courante, fantôme le dimanche, passées réduites et dépliables, les vides comprises) ; la validation est le pivot entre formulaire de préparation et de confirmation ; feuille de nommage construite dès cette phase pour l'activité « autre » ; script de reprise des mesures créant des semaines clôturées ; `BIEN_AUJOURDHUI` pour rejouer un dimanche en développement. Revue sur téléphone et premier dimanche réel reportés, à faire d'ici la phase 6 (décision d'Anthony du 15 septembre 2026).*
 
 **Objectif :** le cycle complet du dimanche tourne, avec les deux sujets les plus simples, et tous les patterns d'écran existent.
 
