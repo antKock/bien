@@ -11,8 +11,9 @@ import { repertoire } from "@/db/recettes";
 import { infoDe, semainesDuFoyer } from "@/db/semaines";
 import { jourDe } from "@/domain/jours";
 import { composerOnglet } from "@/domain/onglet-semaines";
-import { aujourdhui, jourLong } from "@/lib/dates";
+import { jourLong } from "@/lib/dates";
 import { foyerCourant } from "@/lib/foyer-courant";
+import { horloge } from "@/lib/horloge";
 
 // Onglet Semaines : la semaine à confirmer, la courante, la fantôme, puis les
 // semaines passées réduites. Tout se déduit du jour et des lignes existantes.
@@ -23,7 +24,7 @@ export default async function PageSemaines() {
     personnesDuFoyer(foyer.id),
     repertoire(),
   ]);
-  const jour = aujourdhui();
+  const { jour } = await horloge();
   const onglet = composerOnglet(semaines.map(infoDe), jour);
   const parDebut = new Map(semaines.map((s) => [s.debut, s]));
   // Une semaine clôturée aujourd'hui reste dépliée : c'est la carte qu'on vient de toucher.

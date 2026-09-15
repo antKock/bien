@@ -1,6 +1,6 @@
 // Formats d'affichage des dates. Le calendrier lui-même (jours civils, lundis,
 // minuit à Paris) vit dans `domain/jours` ; ici on ne fait que l'écrire.
-import { FUSEAU, ajouterJours, debutDuJour, jourDe, type Jour } from "@/domain/jours";
+import { FUSEAU, ajouterJours, type Jour } from "@/domain/jours";
 
 export { FUSEAU };
 
@@ -18,18 +18,6 @@ export function jourLong(jour: Jour): string {
   return formatJourLong(new Date(`${jour}T12:00:00Z`));
 }
 
-/** L'instant courant. `BIEN_AUJOURDHUI` décale le jour en développement, pour rejouer un dimanche ; l'heure reste vraie. */
-export function maintenant(): Date {
-  const fixe = process.env.BIEN_AUJOURDHUI;
-  const reel = new Date();
-  if (!fixe) return reel;
-  return new Date(reel.getTime() + debutDuJour(fixe).getTime() - debutDuJour(jourDe(reel)).getTime());
-}
-
-/** Le jour civil courant à Paris. */
-export function aujourdhui(): Jour {
-  return jourDe(maintenant());
-}
 
 function partsDe(jour: Jour): { annee: number; mois: number; num: number } {
   const [annee, mois, num] = jour.split("-").map(Number);

@@ -7,7 +7,6 @@ import { ajouterSeances, cocherSeance, retirerSeance, toutCocherSeances } from "
 import { obtenirSemaine } from "@/db/semaines";
 import { seancesACreer, type Activite, type Creneau } from "@/domain/activite";
 import { estValidee, verifierModifiable } from "@/domain/semaine";
-import { maintenant } from "@/lib/dates";
 import { contexteSemaine } from "@/lib/semaines";
 
 export type NouvelleSeanceSaisie = {
@@ -31,7 +30,7 @@ export async function ajouterSeance(debut: string, saisie: NouvelleSeanceSaisie)
     estValidee(ctx.info, ctx.jour),
   );
   const semaine = await obtenirSemaine(ctx.foyer.id, ctx.debut);
-  await ajouterSeances(semaine.id, seances, maintenant());
+  await ajouterSeances(semaine.id, seances, ctx.maintenant);
   redirect(`/semaines/${ctx.debut}/activite`);
 }
 
@@ -46,13 +45,13 @@ export async function retirer(debut: string, id: string): Promise<void> {
 export async function cocher(debut: string, id: string, faite: boolean): Promise<void> {
   const ctx = await contexteSemaine(debut);
   verifierModifiable(ctx.info);
-  if (ctx.semaine) await cocherSeance(ctx.semaine.id, id, faite, maintenant());
+  if (ctx.semaine) await cocherSeance(ctx.semaine.id, id, faite, ctx.maintenant);
   refresh();
 }
 
 export async function toutCocher(debut: string): Promise<void> {
   const ctx = await contexteSemaine(debut);
   verifierModifiable(ctx.info);
-  if (ctx.semaine) await toutCocherSeances(ctx.semaine.id, maintenant());
+  if (ctx.semaine) await toutCocherSeances(ctx.semaine.id, ctx.maintenant);
   refresh();
 }

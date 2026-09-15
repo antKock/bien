@@ -5,7 +5,6 @@ import { enregistrerMesure } from "@/db/mesures";
 import { obtenirSemaine } from "@/db/semaines";
 import { FOURCHETTES, lireValeur, normaliserValeur, valeurValide, type TypeMesure } from "@/domain/mesures";
 import { verifierModifiable } from "@/domain/semaine";
-import { maintenant } from "@/lib/dates";
 import { contexteSemaine } from "@/lib/semaines";
 
 export type RetourMesure = { erreur?: string };
@@ -33,7 +32,7 @@ export async function noterMesure(
     valeur = normaliserValeur(type, brut);
   }
   const semaine = await obtenirSemaine(ctx.foyer.id, ctx.debut);
-  await enregistrerMesure(semaine.id, personneId, type, valeur, maintenant());
+  await enregistrerMesure(semaine.id, personneId, type, valeur, ctx.maintenant);
   refresh();
   return {};
 }

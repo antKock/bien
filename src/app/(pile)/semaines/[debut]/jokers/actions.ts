@@ -6,7 +6,6 @@ import { obtenirNom } from "@/db/noms";
 import { majSemaine, obtenirSemaine } from "@/db/semaines";
 import { decocher, TYPES_ECART, type TypeEcart } from "@/domain/jokers";
 import { validerJokers, verifierModifiable } from "@/domain/semaine";
-import { maintenant } from "@/lib/dates";
 import { contexteSemaine } from "@/lib/semaines";
 
 /**
@@ -26,10 +25,10 @@ export async function basculerEcart(debut: string, jour: number, type: TypeEcart
     return (await obtenirNom(ctx.foyer.id, "autre", nom)).id;
   };
 
-  if (!existant) await creerEcart(semaine.id, jour, type, await nomId(), maintenant());
-  else if (existant.retireLe) await reprendreEcart(existant.id, await nomId(), maintenant());
+  if (!existant) await creerEcart(semaine.id, jour, type, await nomId(), ctx.maintenant);
+  else if (existant.retireLe) await reprendreEcart(existant.id, await nomId(), ctx.maintenant);
   else if (decocher({ ...existant, creeLe: existant.creeLe, retireLe: null }, ctx.info, ctx.jour) === "retirer") {
-    await retirerEcart(existant.id, maintenant());
+    await retirerEcart(existant.id, ctx.maintenant);
   } else await supprimerEcart(existant.id);
   refresh();
 }
@@ -38,6 +37,6 @@ export async function basculerEcart(debut: string, jour: number, type: TypeEcart
 export async function validerGrille(debut: string): Promise<void> {
   const ctx = await contexteSemaine(debut);
   const semaine = await obtenirSemaine(ctx.foyer.id, ctx.debut);
-  await majSemaine(semaine.id, validerJokers(ctx.info, maintenant()));
+  await majSemaine(semaine.id, validerJokers(ctx.info, ctx.maintenant));
   refresh();
 }

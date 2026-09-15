@@ -10,8 +10,9 @@ import { tendance, type TypeMesure } from "@/domain/mesures";
 import { initiales } from "@/domain/personnes";
 import { dimanchePreparation } from "@/domain/semaine";
 import { fenetreSemaines } from "@/domain/tendances";
-import { aujourdhui, jourCourt } from "@/lib/dates";
+import { jourCourt } from "@/lib/dates";
 import { foyerCourant } from "@/lib/foyer-courant";
+import { horloge } from "@/lib/horloge";
 
 const FENETRE = 8;
 const DATES_TABLEAU = 4;
@@ -21,7 +22,7 @@ const DATES_TABLEAU = 4;
 export default async function PageTendances() {
   const foyer = (await foyerCourant())!;
   const [semaines, personnes] = await Promise.all([semainesDuFoyer(foyer.id), personnesDuFoyer(foyer.id)]);
-  const jour = aujourdhui();
+  const { jour } = await horloge();
   const ini = initiales(personnes.map((p) => p.prenom));
   const triees = [...semaines].sort((a, b) => a.debut.localeCompare(b.debut));
 
