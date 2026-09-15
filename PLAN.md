@@ -112,7 +112,7 @@ src/
 
 **Sortie :** la liste de courses reproduit les cas du §2 (quiche ×3 = 2 lots, chili ×1,5) ; un dimanche réel avec plats et courses.
 
-## Phase 5 — Lien Mijote
+## Phase 5 — Lien Mijote ⏸ en attente (décision du 15 septembre 2026, on passe à la phase 6)
 
 **Objectif :** titres, photos et liens viennent du carnet Mijote ; tout le reste reste dans Bien.
 
@@ -122,7 +122,9 @@ src/
 
 **Sortie :** les vignettes de l'écran 06 sont les photos Mijote ; Mijote coupé, l'app tourne.
 
-## Phase 6 — Tendances
+## Phase 6 — Tendances ✔ livrée le 15 septembre 2026
+
+*Décisions et écarts : `docs/32.decisions-dev.md`. En résumé : courbe sur toutes les mesures avec un départ par personne, tableau des quatre dernières dates, jokers et activité sur huit semaines ; une personne sous trois mesures n'a pas de courbe, aucune carte vide n'est rendue ; SVG à la main, géométrie testée dans `domain/tendances`. Revue avec les données réelles reportée avec celle des phases 2 à 4.*
 
 **Objectif :** le seul écran qui regarde au-delà d'une semaine.
 
